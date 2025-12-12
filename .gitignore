@@ -1,0 +1,9 @@
+# Ignore Excel files
+*.xlsx
+
+# Ignore virtual environment directory
+venv/
+
+.env
+
+TODO.md

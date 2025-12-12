@@ -1,0 +1,5 @@
+pandas
+openpyxl
+ollama
+oracledb
+python-dotenv
