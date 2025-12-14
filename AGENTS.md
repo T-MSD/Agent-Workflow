@@ -1,0 +1,22 @@
+# AGENTS.md – Agent Workflow Guidelines
+
+- Python project; use `python3.11+` and a virtualenv.
+- Install deps: `pip install -r requirements.txt`.
+- Run app: `python main.py` (agents in `agents/`, utilities in `src/`).
+- Tests: prefer `pytest` (add if missing). All tests: `pytest -q`.
+- Single test: `pytest path/to/test_file.py::TestClass::test_name -q`.
+- Lint: `flake8 .` for style; `pylint` optional if configured.
+- Format: `black .` (line length 88); imports: `isort .`.
+- Types: `mypy .` with strictness per module; add type hints.
+- Error handling: raise explicit exceptions; avoid bare `except`.
+- Logging: use `logging` module; no print in library code.
+- Imports: absolute over relative; group stdlib/third‑party/local (isort).
+- Naming: snake_case for funcs/vars, PascalCase for classes, UPPER_CASE for constants.
+- Docstrings: Google‑style or reST; include param/return/raises.
+- I/O and paths: use `pathlib`; avoid hardcoded paths.
+- Configuration: prefer env vars (`os.environ`) and `.env` loader if added.
+- Dependency pins: keep `requirements.txt` updated; avoid unused deps.
+- CLI: use `argparse`/`typer` for scripts like `src/print_db_columns.py`.
+- CI awareness: ensure commands are non‑interactive; exit non‑zero on failures.
+- Cursor/Copilot: No `.cursor/rules/` or `.github/copilot-instructions.md` present.
+- Scope: This file’s guidance applies repo‑wide unless overridden locally.
