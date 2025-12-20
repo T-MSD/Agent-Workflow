@@ -1,15 +1,18 @@
-from agent import BaseAgent
-
 from ..state import AgentState
+from .agent import BaseAgent
+
+SYSTEM_PROMPT = """You are an expert enterprise architect.
+You provide recommendations on enterprise architecture, reason about the application landscape, and answer enterprise-related questions.
+"""
 
 
 class Architect(BaseAgent):
-    def __init__(self, model):
+    def __init__(self, model, tools=None):
         super().__init__(
             model=model,
             name="Architect",
-            system_prompt="Meter prompt !!!!!!!!!!!",
-            tools=None,
+            system_prompt=SYSTEM_PROMPT,
+            tools=tools,
         )
 
     def run(self, state: AgentState):

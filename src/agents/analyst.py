@@ -1,15 +1,19 @@
-from agent import BaseAgent
-
 from ..state import AgentState
+from .agent import BaseAgent
+
+SYSTEM_PROMPT = """You are an expert data analyst.
+Your role is to access a database, retrieve data, and perform analysis.
+You must generate the correct SQL query based on the user's request to fetch the necessary information.
+"""
 
 
 class Analyst(BaseAgent):
-    def __init__(self, model):
+    def __init__(self, model, tools=None):
         super().__init__(
             model=model,
             name="Analyst",
-            system_prompt="Meter prompt !!!!!!!!!!!",
-            tools=[],  # TODO
+            system_prompt=SYSTEM_PROMPT,
+            tools=tools,
         )
 
     def run(self, state: AgentState):

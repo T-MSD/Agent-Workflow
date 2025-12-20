@@ -2,15 +2,15 @@ from langgraph.graph import END, StateGraph
 
 from .agents.analyst import Analyst
 from .agents.architect import Architect
-from .agents.supervisor import Supervisor
 from .state import AgentState
+from .supervisor import Supervisor
 
 
 def build_team_graph(llm):
     # Initialize Objects
     analyst = Analyst(llm)
     architect = Architect(llm)
-    supervisor = Supervisor(llm, ["Analyst", "Architect"])
+    supervisor = Supervisor(llm)
 
     workflow = StateGraph(AgentState)
 
@@ -26,7 +26,7 @@ def build_team_graph(llm):
     # The Supervisor Logic (Conditional)
     workflow.add_conditional_edges(
         "Supervisor",
-        lambda x: x["next"],
+        lambda state: state["next"],
         {"Analyst": "Analyst", "Architect": "Architect", "FINISH": END},
     )
 
