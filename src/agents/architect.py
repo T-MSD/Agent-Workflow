@@ -7,12 +7,12 @@ You provide recommendations on enterprise architecture, reason about the applica
 
 
 class Architect(BaseAgent):
-    def __init__(self, model, tools=None):
+    def __init__(self, model):
         super().__init__(
             model=model,
             name="Architect",
             system_prompt=SYSTEM_PROMPT,
-            tools=tools,
+            tools=[],
         )
 
     def run(self, state: AgentState):

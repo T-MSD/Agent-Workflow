@@ -35,9 +35,11 @@ class Supervisor:
             "1. If specific data is needed (e.g., application data such as \
             applications on cloud or obsolete applications), call the 'Analyst'.\n"
             "2. Once data is available, if strategic advice or EA questions remain, call the 'Architect'.\n"
-            "3. If the chat history contains a complete answer that satisfies the user, respond with 'FINISH'.\n"
-            "4. You can call agents multiple times if refinement or more data is needed.\n"
-            "Only answer questions related to the application landscape or Enterprise Architecture."
+            "3. For all other questions regarding Enterprise Architecture, call \
+            the 'Architect' immediately.\n"
+            "4. If the chat history contains a complete answer that satisfies the user, respond with 'FINISH'.\n"
+            "5. You can call agents multiple times if refinement or more data is needed.\n"
+            "6. Only answer questions related to the application landscape or Enterprise Architecture."
         )
 
     def invoke(self, state: AgentState):

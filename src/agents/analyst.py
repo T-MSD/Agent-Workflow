@@ -1,3 +1,5 @@
+from langchain_core.tools import tool
+
 from ..state import AgentState
 from .agent import BaseAgent
 
@@ -8,13 +10,30 @@ You must generate the correct SQL query based on the user's request to fetch the
 
 
 class Analyst(BaseAgent):
-    def __init__(self, model, tools=None):
+    def __init__(self, model):
         super().__init__(
             model=model,
             name="Analyst",
             system_prompt=SYSTEM_PROMPT,
-            tools=tools,
+            tools=[database_access_tool, generate_query],
         )
 
     def run(self, state: AgentState):
         return super().run(state)
+
+
+@tool
+def generate_query(prompt):
+    pass
+
+
+@tool
+def database_access_tool(query):
+    """
+    Query the database to retrieve data regarding the application inventory.
+
+    Args:
+        query: Query to run in the database.
+    """
+
+    pass
