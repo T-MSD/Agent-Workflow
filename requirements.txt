@@ -1,11 +1,10 @@
 pandas
 openpyxl
-ollama
 oracledb
 python-dotenv
 langchain
 langchain_core
 langchain_community
-langchain_ollama
 langgraph
 langgraph_supervisor
+langchain-google-genai

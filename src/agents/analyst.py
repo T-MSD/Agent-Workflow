@@ -24,6 +24,10 @@ class Analyst(BaseAgent):
 
 @tool
 def generate_query(prompt):
+    """
+    Generate a query based on the received prompt
+    """
+
     pass
 
 

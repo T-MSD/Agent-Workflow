@@ -34,12 +34,8 @@ class BaseAgent:
         The standard execution method for LangGraph nodes.
         It takes the current state, runs the agent logic, and returns the update.
         """
-        # 1. Prepare messages (System Message + Conversation History)
         messages = [SystemMessage(content=self.system_prompt)] + state["messages"]
 
-        # 2. Invoke the model
         response = self.model.invoke(messages)
 
-        # 3. Return the update for the 'messages' key in the state
-        # We ensure the message is tagged with the agent's name for the Supervisor
         return {"messages": [response]}
