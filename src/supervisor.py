@@ -11,8 +11,8 @@ from .state import AgentState
 class Router(BaseModel):
     """Decide which worker to route to next. If the task is fully complete, route to FINISH."""
 
-    next: Literal["Analyst", "Architect", "FINISH"] = Field(
-        description="The name of the next agent to act, or FINISH if the user's request is satisfied."
+    next: Literal["Analyst", "Architect", "OUT_OF_SCOPE", "FINISH"] = Field(
+        description="The name of the next agent to act, OUT_OF_SCOPE if the question is not Enterprise Architecture or application inventory related, and FINISH if the user's request is satisfied."
     )
 
 
@@ -29,7 +29,7 @@ class Supervisor:
 
         self.team_members = ["Analyst", "Architect"]
         self.system_prompt = (
-            "You are the Team Leader (Supervisor) managing a Data Analyst and an Enterprise Architect.\n"
+            "You are the Enterprise Architecture Team Leader (Supervisor) managing a Data Analyst and an Enterprise Architect.\n"
             "Your job is to coordinate their efforts to answer the user's prompt.\n\n"
             "GUIDELINES:\n"
             "1. If specific data is needed (e.g., application data such as \
@@ -38,9 +38,22 @@ class Supervisor:
             "3. For all other questions regarding Enterprise Architecture, call \
             the 'Architect' immediately.\n"
             "4. If the chat history contains a complete answer that satisfies the user, respond with 'FINISH'.\n"
-            "5. You can call agents multiple times if refinement or more data is needed.\n"
-            "6. Only answer questions related to the application landscape or Enterprise Architecture."
+            "5. If the user's questions is not related to Enterprise Architecture or application inventory, respond with 'OUT_OF_SCOPE'.\n"
+            "6. You can call agents multiple times if refinement or more data is needed."
         )
+
+    def scope_message(self, state: AgentState):
+        """
+        Adds a message to the state indicating the request is out of scope
+        """
+
+        return {
+            "messages": [
+                SystemMessage(
+                    content="I am sorry, but your request is outside of my scope. I can only answer questions about Enterprise Architecture and application inventory."
+                )
+            ]
+        }
 
     def invoke(self, state: AgentState):
         """

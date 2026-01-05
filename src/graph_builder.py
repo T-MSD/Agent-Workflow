@@ -29,11 +29,13 @@ def build_team_graph(llm):
     workflow.add_node("Analyst", analyst.run)
     workflow.add_node("Architect", architect.run)
     workflow.add_node("Supervisor", supervisor.invoke)
+    workflow.add_node("OUT_OF_SCOPE", supervisor.scope_message)
     workflow.add_node("action", tool_node)
 
     workflow.set_entry_point("Supervisor")
 
     workflow.add_edge("Architect", "Supervisor")
+    workflow.add_edge("OUT_OF_SCOPE", END)
 
     workflow.add_conditional_edges(
         "Analyst", should_continue, {"action": "action", "Supervisor": "Supervisor"}
@@ -44,7 +46,12 @@ def build_team_graph(llm):
     workflow.add_conditional_edges(
         "Supervisor",
         lambda state: state["next"],
-        {"Analyst": "Analyst", "Architect": "Architect", "FINISH": END},
+        {
+            "Analyst": "Analyst",
+            "Architect": "Architect",
+            "OUT_OF_SCOPE": "OUT_OF_SCOPE",
+            "FINISH": END,
+        },
     )
 
     return workflow.compile()

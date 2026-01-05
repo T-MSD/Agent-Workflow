@@ -22,40 +22,43 @@ def run_agent_team():
 
     app = build_team_graph(llm)
 
-    user_query = "What is tmForum?"
+    user_prompt = input("Type your question: ")
 
-    initial_state = {
-        "messages": [HumanMessage(content=user_query)],
-        "next": "Supervisor",  # Start with the Leader
-    }
+    while user_prompt != "/bye":
+        state = {
+            "messages": [HumanMessage(content=user_prompt)],
+            "next": "Supervisor",  # Start with the Leader
+        }
 
-    print("\n" + "=" * 50)
-    print("🚀 TEAM ORCHESTRATION STARTED")
-    print("=" * 50 + "\n")
+        print("\n" + "=" * 50)
+        print("🚀 TEAM ORCHESTRATION STARTED")
+        print("=" * 50 + "\n")
 
-    for output in app.stream(initial_state, config={"recursion_limit": 20}):
-        for node_name, state_update in output.items():
-            print(f"[{node_name.upper()}]:")
+        for output in app.stream(state, config={"recursion_limit": 20}):
+            for node_name, state_update in output.items():
+                print(f"[{node_name.upper()}]:")
 
-            if "messages" in state_update:
-                last_msg = state_update["messages"][-1]
-                if last_msg.content:
-                    print(f"💬 {last_msg.content}")
+                if "messages" in state_update:
+                    last_msg = state_update["messages"][-1]
+                    if last_msg.content:
+                        print(f"💬 {last_msg.content}")
 
-                if hasattr(last_msg, "tool_calls") and last_msg.tool_calls:
-                    for tool_call in last_msg.tool_calls:
-                        print(
-                            f"🛠️  Calling Tool: {tool_call['name']} with args {tool_call['args']}"
-                        )
+                    if hasattr(last_msg, "tool_calls") and last_msg.tool_calls:
+                        for tool_call in last_msg.tool_calls:
+                            print(
+                                f"🛠️  Calling Tool: {tool_call['name']} with args {tool_call['args']}"
+                            )
 
-            if "next" in state_update:
-                print(f"⏭️  Next Step: {state_update['next']}")
+                if "next" in state_update:
+                    print(f"⏭️  Next Step: {state_update['next']}")
 
-            print("-" * 30)
+                print("-" * 30)
 
-    print("\n" + "=" * 50)
-    print("✅ WORKFLOW COMPLETE")
-    print("=" * 50)
+        print("\n" + "=" * 50)
+        print("✅ WORKFLOW COMPLETE")
+        print("=" * 50)
+
+        user_prompt = input("Type your question: ")
 
 
 if __name__ == "__main__":
