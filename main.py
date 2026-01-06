@@ -1,13 +1,7 @@
-import getpass
-import os
-
 from langchain_core.messages import HumanMessage
-from langchain_google_genai import ChatGoogleGenerativeAI
+from langchain_groq import ChatGroq
 
 from src.graph_builder import build_team_graph
-
-if "GOOGLE_API_KEY" not in os.environ:
-    os.environ["GOOGLE_API_KEY"] = getpass.getpass("Enter your Google API Key: ")
 
 
 def run_agent_team():
@@ -15,12 +9,11 @@ def run_agent_team():
     Initializes the Gemini model, constructs the LangGraph,
     and executes a multi-agent conversation.
     """
+    supervisor_llm = ChatGroq(model="llama-3.3-70b-versatile", temperature=0)
 
-    llm = ChatGoogleGenerativeAI(
-        model="gemini-2.5-flash", temperature=0, streaming=True
-    )
+    worker_llm = ChatGroq(model="llama-3.1-8b-instant", temperature=0)
 
-    app = build_team_graph(llm)
+    app = build_team_graph(supervisor_llm, worker_llm)
 
     user_prompt = input("Type your question: ")
 

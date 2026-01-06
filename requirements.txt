@@ -7,4 +7,5 @@ langchain_core
 langchain_community
 langgraph
 langgraph_supervisor
-langchain-google-genai
+langchain-ollama
+langchain-groq

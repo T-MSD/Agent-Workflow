@@ -1,7 +1,7 @@
 from langgraph.graph import END, StateGraph
 from langgraph.prebuilt import ToolNode
 
-from .agents.analyst import Analyst, database_access_tool, generate_query
+from .agents.analyst import Analyst
 from .agents.architect import Architect
 from .state import AgentState
 from .supervisor import Supervisor
@@ -9,20 +9,24 @@ from .supervisor import Supervisor
 
 # Helper function to check if the last message contains a tool call
 def should_continue(state: AgentState):
-    messages = state["messages"]
-    last_message = messages[-1]
-    if last_message.tool_calls:
+    """
+    Helper function to check if the last message contains a tool call.
+    """
+    last_message = state["messages"][-1]
+
+    # The last message has tool calls, so execute the tool.
+    if hasattr(last_message, "tool_calls") and last_message.tool_calls:
         return "action"
+    # Otherwise, return to the supervisor to decide the next step.
     return "Supervisor"
 
 
-def build_team_graph(llm):
-    analyst = Analyst(llm)
-    architect = Architect(llm)
-    supervisor = Supervisor(llm)
+def build_team_graph(supervisor_llm, worker_llm):
+    analyst = Analyst(worker_llm)
+    architect = Architect(worker_llm)
+    supervisor = Supervisor(supervisor_llm)
 
-    tools = [database_access_tool, generate_query]
-    tool_node = ToolNode(tools)
+    tool_node = ToolNode(analyst.tools)
 
     workflow = StateGraph(AgentState)
 
@@ -41,7 +45,8 @@ def build_team_graph(llm):
         "Analyst", should_continue, {"action": "action", "Supervisor": "Supervisor"}
     )
 
-    workflow.add_edge("action", "Analyst")
+    # After a tool is executed, route back to the Supervisor to decide the next step
+    workflow.add_edge("action", "Supervisor")
 
     workflow.add_conditional_edges(
         "Supervisor",

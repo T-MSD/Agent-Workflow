@@ -25,6 +25,7 @@ class BaseAgent:
 
         # If the agent has tools, bind them to the LLM
         if tools:
+            self.tools = tools
             self.model = model.bind_tools(tools)
         else:
             self.model = model
