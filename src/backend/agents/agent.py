@@ -4,7 +4,7 @@ from langchain_core.messages import SystemMessage
 from langchain_core.runnables import Runnable
 from langchain_core.tools import BaseTool
 
-from ..state import AgentState
+from state import AgentState
 
 
 class BaseAgent:

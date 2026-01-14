@@ -1,4 +1,4 @@
-from ..state import AgentState
+from state import AgentState
 from .agent import BaseAgent
 
 SYSTEM_PROMPT = """You are an expert enterprise architect.

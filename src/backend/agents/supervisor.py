@@ -3,7 +3,7 @@ from typing import Literal
 from langchain_core.messages import SystemMessage
 from pydantic import BaseModel, Field
 
-from .state import AgentState
+from state import AgentState
 
 
 # 1. Define the routing schema

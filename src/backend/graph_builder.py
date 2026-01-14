@@ -1,10 +1,8 @@
 from langgraph.graph import END, StateGraph
 from langgraph.prebuilt import ToolNode
 
-from .agents.analyst import Analyst
-from .agents.architect import Architect
-from .state import AgentState
-from .supervisor import Supervisor
+from agents import Analyst, Architect, Supervisor
+from state import AgentState
 
 
 # Helper function to check if the last message contains a tool call

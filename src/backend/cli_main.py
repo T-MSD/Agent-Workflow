@@ -1,7 +1,7 @@
 from langchain_core.messages import HumanMessage
 from langchain_groq import ChatGroq
 
-from src.graph_builder import build_team_graph
+from graph_builder import build_team_graph
 
 
 def run_agent_team():

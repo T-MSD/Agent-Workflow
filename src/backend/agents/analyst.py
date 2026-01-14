@@ -4,7 +4,7 @@ import oracledb
 from dotenv import load_dotenv
 from langchain_core.tools import tool
 
-from ..state import AgentState
+from state import AgentState
 from .agent import BaseAgent
 
 load_dotenv()

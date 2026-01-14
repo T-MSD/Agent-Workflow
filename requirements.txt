@@ -9,3 +9,6 @@ langgraph
 langgraph_supervisor
 langchain-ollama
 langchain-groq
+fastapi[standard]
+uvicorn[standard]
+pydantic
