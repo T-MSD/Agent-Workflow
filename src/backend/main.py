@@ -1,4 +1,7 @@
 import uvicorn
+import os
+
+from dotenv import load_dotenv
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
@@ -6,6 +9,11 @@ from langchain_core.messages import HumanMessage
 from langchain_groq import ChatGroq
 from graph_builder import build_team_graph
 
+load_dotenv()
+
+HOST = os.getenv("HOST")
+PORT = int(os.getenv("PORT"))
+ORIGIN = os.getenv("ORIGIN")
 
 app = FastAPI(
     title="Multi-Agent Team API",
@@ -15,9 +23,9 @@ app = FastAPI(
 
 
 origins = [
-    "http://localhost:3000",
-    "http://localhost:5173"
+    ORIGIN
 ]
+
 app.add_middleware(
     CORSMiddleware,
     allow_origins=origins,
@@ -65,4 +73,4 @@ def invoke_agent_team(request: InvokeRequest):
 
 
 if __name__ == "__main__":
-    uvicorn.run(app, host="0.0.0.0", port=8000)
+    uvicorn.run(app, host=HOST, port=PORT)

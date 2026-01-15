@@ -8,11 +8,11 @@ from state import AgentState
 from .agent import BaseAgent
 
 load_dotenv()
+
 SYSTEM_PROMPT = """You are an expert data analyst.
 Your role is to access a database, retrieve data, and perform analysis.
 You must generate the correct SQL query based on the user's request to fetch the necessary information.
 """
-
 
 class Analyst(BaseAgent):
     def __init__(self, model):

@@ -14,11 +14,9 @@ class AgentState(TypedDict):
     # to APPEND new messages to the list rather than overwriting them.
     messages: Annotated[Sequence[BaseMessage], operator.add]
 
-    # This field is used by the Supervisor to track which agent is active.
-    # It acts as the routing instruction for the next step.
     next: str
 
-    # (Optional) High-level context fields if you want to keep them
-    # separate from the message history for easier access by the Architect.
     extracted_data: str
     final_recommendation: str
+
+    architect_ran: bool

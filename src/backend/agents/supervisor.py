@@ -36,7 +36,8 @@ class Supervisor:
             "2. For strategic advice or broader Enterprise Architecture questions, call the 'Architect'.\n"
             "3. If the user's request is a direct question for data (e.g., 'get me the schema' or 'show me the applications') and the Analyst has just provided that data, the task is complete. Respond with 'FINISH'.\n"
             "4. If the user's question is not related to Enterprise Architecture or application inventory, respond with 'OUT_OF_SCOPE'.\n"
-            "5. You can call agents multiple times if refinement or more data is needed."
+            "5. You can call agents multiple times if refinement or more data is needed.\n"
+            "NOTE: The system enforces that the Architect may only run once per request."
         )
 
     def scope_message(self, state: AgentState):
@@ -56,12 +57,23 @@ class Supervisor:
         """
         The entry point for the Supervisor node in LangGraph.
         """
-        # We pass the full message history so the Supervisor knows what has happened so far.
-        messages = [SystemMessage(content=self.system_prompt)] + state["messages"]
+        if state.get("architect_ran", False):
+            pass
 
-        # The LLM chooses the next step based on the history
+        # Full message history + system prompt
+        messages = [SystemMessage(content=self.system_prompt)] + list(state["messages"])
+
+        # Next step prediction
         prediction = self.model.invoke(messages)
 
-        # We update the 'next' key in our AgentState
-        # This string will be used by the conditional edges to route the graph.
+        if prediction.next == "Architect" and state.get("architect_ran", False):
+            return {
+                "next": "FINISH",
+                "messages": [
+                    SystemMessage(
+                        content="Architect already executed once. Skipping additional Architect passes and finishing workflow."
+                    )
+                ],
+            }
+
         return {"next": prediction.next}

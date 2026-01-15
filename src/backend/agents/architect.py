@@ -16,4 +16,15 @@ class Architect(BaseAgent):
         )
 
     def run(self, state: AgentState):
-        return super().run(state)
+        """
+        Run the Architect and set a boolean flag in state to indicate
+        the Architect has been executed once. This prevents additional
+        Architect handoffs.
+        """
+        # Execute the base agent run to get the model response
+        update = super().run(state)
+
+        # Set a boolean flag instead of a numeric counter
+        update["architect_ran"] = True
+
+        return update
