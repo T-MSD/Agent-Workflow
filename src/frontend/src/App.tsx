@@ -5,7 +5,9 @@ function App() {
 
   return (
     <>
-      <ChatWindow />
+      <div className="w-screen h-dvh bg-gray-900 p-4">
+        <ChatWindow />
+      </div>
     </>
   );
 }
