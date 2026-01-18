@@ -3,7 +3,12 @@ import { useRef, useState } from 'react'
 import { useAgent } from '../../hooks/useAgent';
 import ChatSendButton from './ChatSendButton';
 
-function ChatInputArea() {
+interface ChatInputAreaProps {
+    setIsFirstMessage: (value: boolean) => void;
+}
+
+
+function ChatInputArea({ setIsFirstMessage }: ChatInputAreaProps) {
     const [prompt, setPrompt] = useState('');
     const { data, isLoading, error, askAgent } = useAgent();
     const inputRef = useRef<HTMLDivElement>(null);
@@ -16,8 +21,8 @@ function ChatInputArea() {
         if (!prompt.trim() || isLoading) return;
         
         askAgent(prompt);
+        setIsFirstMessage(false);
         
-        // Reset both state and the actual DOM element
         setPrompt('');
         if (inputRef.current) {
             inputRef.current.innerText = '';
@@ -33,7 +38,15 @@ function ChatInputArea() {
 
     return (
         <>
-        <div className="w-full p-4 bg-neutral-800 items-center rounded-sm">
+            {error && <div className="error">{error}</div>}
+            
+            {data && (
+            <div className="response">
+                <h3>Result:</h3>
+                <p>{data}</p>
+            </div>
+            )}
+
             <div className="flex w-full min-h-[48px] p-2 justify-between items-center gap-2 bg-neutral-700 rounded-lg text-white relative">
                 {prompt.length === 0 && (
                     <div className="absolute left-3 text-neutral-400 pointer-events-none">
@@ -51,16 +64,6 @@ function ChatInputArea() {
                 />
                 <ChatSendButton onClick={handleSend} disabled={isLoading || !prompt.trim()} isLoading={isLoading}/>
             </div>
-
-            {error && <div className="error">{error}</div>}
-        
-            {data && (
-            <div className="response">
-                <h3>Result:</h3>
-                <p>{data}</p>
-            </div>
-            )}
-        </div>
         </>
     );
 };

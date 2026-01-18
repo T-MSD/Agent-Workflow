@@ -5,7 +5,7 @@ function App() {
 
   return (
     <>
-      <div className="w-screen h-dvh bg-neutral-900 p-4">
+      <div className="flex w-screen h-dvh bg-neutral-900 p-4">
         <ChatWrapper />
       </div>
     </>
