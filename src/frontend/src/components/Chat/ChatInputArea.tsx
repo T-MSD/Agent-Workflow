@@ -4,11 +4,11 @@ import { useAgent } from '../../hooks/useAgent';
 import ChatSendButton from './ChatSendButton';
 
 interface ChatInputAreaProps {
-    setIsFirstMessage: (value: boolean) => void;
+    onSendMessage: (content: string) => void;
 }
 
 
-function ChatInputArea({ setIsFirstMessage }: ChatInputAreaProps) {
+function ChatInputArea({onSendMessage }: ChatInputAreaProps) {
     const [prompt, setPrompt] = useState('');
     const { data, isLoading, error, askAgent } = useAgent();
     const inputRef = useRef<HTMLDivElement>(null);
@@ -21,7 +21,7 @@ function ChatInputArea({ setIsFirstMessage }: ChatInputAreaProps) {
         if (!prompt.trim() || isLoading) return;
         
         askAgent(prompt);
-        setIsFirstMessage(false);
+        onSendMessage(prompt);
         
         setPrompt('');
         if (inputRef.current) {
@@ -47,7 +47,7 @@ function ChatInputArea({ setIsFirstMessage }: ChatInputAreaProps) {
             </div>
             )}
 
-            <div className="flex w-full min-h-[48px] p-2 justify-between items-center gap-2 bg-neutral-700 rounded-lg text-white relative">
+            <div className="flex w-full min-h-[48px] p-2 justify-between items-center gap-2 bg-neutral-600 rounded-lg text-white relative">
                 {prompt.length === 0 && (
                     <div className="absolute left-3 text-neutral-400 pointer-events-none">
                         Type your message here...

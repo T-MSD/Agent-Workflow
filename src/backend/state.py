@@ -16,7 +16,4 @@ class AgentState(TypedDict):
 
     next: str
 
-    extracted_data: str
-    final_recommendation: str
-
     architect_ran: bool
