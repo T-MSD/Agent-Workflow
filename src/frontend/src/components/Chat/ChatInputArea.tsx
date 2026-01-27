@@ -4,24 +4,29 @@ import { useAgent } from '../../hooks/useAgent';
 import ChatSendButton from './ChatSendButton';
 
 interface ChatInputAreaProps {
-    onSendMessage: (content: string) => void;
+    onSendMessage: (content: string, role: 'user' | 'agent') => void;
 }
 
 
 function ChatInputArea({onSendMessage }: ChatInputAreaProps) {
     const [prompt, setPrompt] = useState('');
-    const { data, isLoading, error, askAgent } = useAgent();
+    const { isLoading, askAgent } = useAgent();
     const inputRef = useRef<HTMLDivElement>(null);
     
     const handleInput = (e: React.ChangeEvent<HTMLDivElement>) => {
         setPrompt(e.currentTarget.innerText);
     };
 
-    const handleSend = () => {
+    const handleSend = async () => {
         if (!prompt.trim() || isLoading) return;
         
-        askAgent(prompt);
-        onSendMessage(prompt);
+        onSendMessage(prompt, 'user');
+        
+        const agentResponse = await askAgent(prompt);
+
+        if (agentResponse && agentResponse.trim()) {
+            onSendMessage(agentResponse, 'agent');
+        }
         
         setPrompt('');
         if (inputRef.current) {
@@ -38,15 +43,6 @@ function ChatInputArea({onSendMessage }: ChatInputAreaProps) {
 
     return (
         <>
-            {error && <div className="error">{error}</div>}
-            
-            {data && (
-            <div className="response">
-                <h3>Result:</h3>
-                <p>{data}</p>
-            </div>
-            )}
-
             <div className="flex w-full min-h-[48px] p-2 justify-between items-center gap-2 bg-neutral-600 rounded-lg text-white relative">
                 {prompt.length === 0 && (
                     <div className="absolute left-3 text-neutral-400 pointer-events-none">

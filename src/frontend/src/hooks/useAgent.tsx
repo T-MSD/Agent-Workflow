@@ -2,32 +2,32 @@ import { useState } from 'react';
 import { invokeAgent } from '../services/api';
 
 interface AgentState {
-  data: string;
+  response: string;
   isLoading: boolean;
-  error: string | null;
 }
 
 export function useAgent() {
   const [state, setState] = useState<AgentState>({
-    data: '',
+    response: '',
     isLoading: false,
-    error: null,
   });
 
-  const askAgent = async (prompt: string) => {
+  const askAgent = async (prompt: string): Promise<string> => {
     if (!prompt.trim()) {
-      setState({ data: '', isLoading: false, error: 'Please enter a prompt.' });
-      return;
+      setState({ response: '', isLoading: false});
+      return '';
     }
 
-    setState({ data: '', isLoading: true, error: null });
+    setState({ response: '', isLoading: true});
 
     try {
       const result = await invokeAgent(prompt);
-      setState({ data: result, isLoading: false, error: null });
+      setState({ response: result, isLoading: false});
+      return result;
     } catch (err) {
-      setState({ data: '', isLoading: false, error: 'Agent failed to respond.' });
+      setState({ response: '', isLoading: false});
       console.error(err);
+      return 'Agent failed to respond.';
     }
   };
 

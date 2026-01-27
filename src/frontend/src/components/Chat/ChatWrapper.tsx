@@ -14,15 +14,16 @@ function ChatWrapper() {
   const [isFirstMessage, setIsFirstMessage] = useState(true);
   const [messages, setMessages] = useState<Message[]>([]);
 
-  const handleSendMessage = (content: string) => {
-    const newUserMessage: Message = {
-      id: (messages.length + 1).toString(),
-      message: content,
-      role: 'user',
-    };
+  const addMessageToHistory = (content: string, role: 'user' | 'agent') => {
+    setMessages((prev) => {
+      const newMessage: Message = {
+        id: (prev.length + 1).toString(),
+        message: content,
+        role: role,
+      };
+      return [...prev, newMessage];
+    });
 
-    setMessages((prev) => [...prev, newUserMessage]);
-    
     if (isFirstMessage) {
         setIsFirstMessage(false);
     }
@@ -35,7 +36,7 @@ function ChatWrapper() {
         : "flex flex-col w-full h-full text-white p-4 bg-neutral-800 items-center rounded-sm gap-8"
       }>
         {isFirstMessage ? <ChatWelcomeHero /> : <ChatHistory messages={messages}/>}
-        <ChatInputArea onSendMessage={handleSendMessage} />
+        <ChatInputArea onSendMessage={addMessageToHistory} />
       </div>
     </>
   );
