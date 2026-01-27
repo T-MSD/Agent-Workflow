@@ -6,16 +6,18 @@ interface AgentState {
   isLoading: boolean;
 }
 
+type AskResult = { ok: true; text: string } | { ok: false; error: string };
+
 export function useAgent() {
   const [state, setState] = useState<AgentState>({
     response: '',
     isLoading: false,
   });
 
-  const askAgent = async (prompt: string): Promise<string> => {
+  const askAgent = async (prompt: string): Promise<AskResult> => {
     if (!prompt.trim()) {
       setState({ response: '', isLoading: false});
-      return '';
+      return { ok: false, error: 'Please enter a prompt.' };
     }
 
     setState({ response: '', isLoading: true});
@@ -23,11 +25,11 @@ export function useAgent() {
     try {
       const result = await invokeAgent(prompt);
       setState({ response: result, isLoading: false});
-      return result;
+      return { ok: true, text: result };
     } catch (err) {
       setState({ response: '', isLoading: false});
       console.error(err);
-      return 'Agent failed to respond.';
+      return { ok: false, error: 'Agent failed to respond.' };
     }
   };
 

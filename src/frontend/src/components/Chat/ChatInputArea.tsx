@@ -22,10 +22,11 @@ function ChatInputArea({onSendMessage }: ChatInputAreaProps) {
         
         onSendMessage(prompt, 'user');
         
-        const agentResponse = await askAgent(prompt);
-
-        if (agentResponse && agentResponse.trim()) {
-            onSendMessage(agentResponse, 'agent');
+        const res = await askAgent(prompt);
+        if (res.ok) {
+            onSendMessage(res.text, 'agent');
+        } else {
+            onSendMessage(res.error, 'agent');
         }
         
         setPrompt('');
