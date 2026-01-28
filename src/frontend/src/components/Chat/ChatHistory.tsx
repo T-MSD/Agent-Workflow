@@ -1,17 +1,12 @@
 import ChatMessage from "./ChatMessage";
-
-interface Message {
-    id: string;
-    message: string;
-    role: 'user' | 'agent';
-}
+import type { Message } from '../../types/messages';
 
 function ChatHistory({ messages }: { messages: Message[] }) {
 
     return (
-        <div className="flex flex-col w-full h-full bg-red-300">
-            {messages.map((msg, index) => (
-                <ChatMessage key={index} id={msg.id} message={msg.message} role={msg.role} />
+        <div className="flex flex-col w-full h-full gap-4 overflow-y-auto">
+            {messages.map((msg) => (
+                <ChatMessage key={msg.id} {...msg} />
             ))}
         </div>
     )

@@ -13,6 +13,3 @@ export function createMessage(content: string, role: MessageRole) {
 
   } as Message;
 }
-
-export const createUserMessage = (content: string) => createMessage(content, 'user');
-export const createAgentMessage = (content: string) => createMessage(content, 'agent');

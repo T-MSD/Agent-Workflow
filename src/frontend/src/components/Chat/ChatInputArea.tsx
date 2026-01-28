@@ -4,7 +4,7 @@ import { useAgent } from '../../hooks/useAgent';
 import ChatSendButton from './ChatSendButton';
 
 interface ChatInputAreaProps {
-    onSendMessage: (content: string, role: 'user' | 'agent') => void;
+    onSendMessage: (content: string, role: 'User' | 'Agent') => void;
 }
 
 
@@ -20,13 +20,13 @@ function ChatInputArea({onSendMessage }: ChatInputAreaProps) {
     const handleSend = async () => {
         if (!prompt.trim() || isLoading) return;
         
-        onSendMessage(prompt, 'user');
+        onSendMessage(prompt, 'User');
         
         const res = await askAgent(prompt);
         if (res.ok) {
-            onSendMessage(res.text, 'agent');
+            onSendMessage(res.text, 'Agent');
         } else {
-            onSendMessage(res.error, 'agent');
+            onSendMessage(res.error, 'Agent');
         }
         
         setPrompt('');
