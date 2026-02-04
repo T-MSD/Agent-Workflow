@@ -1,4 +1,4 @@
-import type { Message, MessageRole} from '../types/messages';
+import type { Message, MessageRole} from '../types/types';
 
 function nowIso(): string {
   return new Date().toISOString();

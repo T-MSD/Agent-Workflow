@@ -1,12 +1,10 @@
 import { useState } from 'react';
 import { invokeAgent } from '../services/api';
-
+import type { AskResult } from '../types/types';
 interface AgentState {
   response: string;
   isLoading: boolean;
 }
-
-type AskResult = { ok: true; text: string } | { ok: false; error: string };
 
 export function useAgent() {
   const [state, setState] = useState<AgentState>({

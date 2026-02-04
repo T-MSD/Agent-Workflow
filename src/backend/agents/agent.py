@@ -4,7 +4,7 @@ from langchain_core.messages import SystemMessage
 from langchain_core.runnables import Runnable
 from langchain_core.tools import BaseTool
 
-from state import AgentState
+from helpers.state import AgentState
 
 
 class BaseAgent:
@@ -23,7 +23,6 @@ class BaseAgent:
         self.name = name
         self.system_prompt = system_prompt
 
-        # If the agent has tools, bind them to the LLM
         if tools:
             self.tools = tools
             self.model = model.bind_tools(tools)

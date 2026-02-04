@@ -3,7 +3,7 @@ import ChatInputArea from './ChatInputArea';
 import { useState } from 'react';
 import ChatHistory from './ChatHistory';
 import ChatWelcomeHero from './ChatWelcomeHero';
-import type { Message } from '../../types/messages';
+import type { Message } from '../../types/types';
 import { createMessage } from '@/utils/messages';
 
 function ChatWrapper() {

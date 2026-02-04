@@ -7,7 +7,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from langchain_core.messages import HumanMessage
 from langchain_groq import ChatGroq
-from graph_builder import build_team_graph
+from helpers.graph_builder import build_team_graph
 
 load_dotenv()
 
@@ -42,7 +42,7 @@ class InvokeRequest(BaseModel):
 
 class InvokeResponse(BaseModel):
     """Response model for the agent team's output."""
-    output: str
+    response: str
 
 
 @app.post("/invoke", response_model=InvokeResponse)
@@ -69,7 +69,7 @@ def invoke_agent_team(request: InvokeRequest):
                 if last_msg.content:
                     if state_update.get("next") is None:
                         final_output = last_msg.content
-    return InvokeResponse(output=final_output)
+    return InvokeResponse(response=final_output)
 
 
 if __name__ == "__main__":

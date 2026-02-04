@@ -1,6 +1,6 @@
 import ai_icon from '../../assets/ai_icon.svg';
 import user_icon from '../../assets/user_icon.svg';
-import type { MessageRole } from '../../types/messages';
+import type { MessageRole } from '../../types/types';
 
 interface ChatIconProps {
   role: MessageRole;

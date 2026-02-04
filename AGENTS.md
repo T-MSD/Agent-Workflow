@@ -1,135 +1,186 @@
 # AGENTS.md – Agent Workflow Guidelines
 
-This file documents how agentic coding assistants should work in this repository. It complements any local CONTRIBUTING/README files and applies repo‑wide unless a more specific AGENTS.md is present in a subdirectory.
+This file provides guidance for agentic coding assistants working in this repository. The project is a multi-agent Enterprise Architecture workflow system with a Python/FastAPI backend (LangChain/LangGraph) and a React/TypeScript frontend.
 
-**Quick Start**
-- Use `python3.11+` and create an isolated environment: `python -m venv .venv` then `source .venv/bin/activate` (Unix) or `.\.venv\Scripts\activate` (Windows).
-- Install runtime dependencies: `pip install -r requirements.txt`.
-- Install development dependencies (if present): `pip install -r dev-requirements.txt` or `pip install -U black isort flake8 mypy pytest`.
-- Run the app (local dev): `python main.py` (agents in `agents/`, utilities in `src/`).
+## Project Structure
 
-**Build / Lint / Test Commands**
-- Install deps: `pip install -r requirements.txt`.
-- Run all tests: `pytest -q` or `pytest -q tests/`.
-- Run a single test file: `pytest -q path/to/test_file.py`.
-- Run a single test case or method: `pytest -q path/to/test_file.py::TestClass::test_name`.
-- Run tests with verbose output and capture: `pytest -v --maxfail=1`.
-- Run tests with coverage: `coverage run -m pytest && coverage report -m`.
-- Run only tests marked with a marker: `pytest -q -m marker_name` (use `@pytest.mark.marker_name`).
-- Lint (style): `flake8 .`.
-- Format code: `black .` (project uses 88 char line length by default).
-- Sort/normalize imports: `isort .`.
-- Type checking: `mypy .` (adjust strictness per-module via `mypy.ini` or `pyproject.toml`).
-- Optional static checks: `pylint src/` (if configured).
+```
+src/
+  backend/           # Python FastAPI + LangGraph agents
+    agents/          # Agent classes (Analyst, Architect, Supervisor)
+    helpers/         # State, graph builder utilities
+    main.py          # FastAPI entrypoint
+    cli_main.py      # CLI entrypoint for local testing
+  frontend/          # React + TypeScript + Vite
+    src/components/  # React components (Chat UI)
+    src/hooks/       # Custom React hooks
+    src/services/    # API service layer
+```
 
-**Running a Single Test (cheat sheet)**
-- Test function: `pytest -q tests/test_utils.py::test_helper`.
-- Test method inside class: `pytest -q tests/test_models.py::TestModel::test_save`.
-- Test pattern: `pytest -q -k "substring_of_test_name"`.
-- Debug a test: `pytest -q tests/test_x.py -k test_name -s` or use `pytest --pdb`.
+## Quick Start
 
-**Formatting & Imports**
-- Use `black` for formatting; run `black .` before commits.
-- Keep imports grouped and ordered: standard library, third‑party, local application imports. Use `isort .` to enforce this.
-- Prefer absolute imports over relative imports for application modules (easier to refactor and search).
-- Avoid wildcard imports (`from module import *`).
-- Use `from typing import TYPE_CHECKING` when needed to avoid runtime import cycles in type hints.
+**Backend:**
+```bash
+cd src/backend
+python -m venv .venv && source .venv/bin/activate  # Unix
+pip install -r ../../requirements.txt
+cp .env.example .env  # Configure GROQ_API_KEY, Oracle DB credentials
+python main.py        # FastAPI server
+python cli_main.py    # CLI testing mode
+```
 
-**Typing**
-- Add type hints to public functions and methods. Use `typing` types (`list[int]`, `dict[str, Any]`, `Optional[...]`).
-- Use `mypy` to check types. Configure `mypy.ini` or `pyproject.toml` for per-module strictness.
-- For complex return types, prefer `TypedDict`, `Protocol`, `NamedTuple`, or small dataclasses over generic `dict`/`tuple` where helpful.
-- Avoid `Any` in new code unless necessary; document why `Any` is used with a comment.
+**Frontend:**
+```bash
+cd src/frontend
+npm install
+npm run dev           # Vite dev server
+```
 
-**Naming Conventions**
-- Files and modules: `snake_case.py`.
-- Functions and variables: `snake_case`.
-- Classes: `PascalCase`.
-- Constants: `UPPER_CASE_WITH_UNDERSCORES`.
-- Private module members: prefix with single underscore (e.g., `_helper`).
-- Test functions: `test_<behavior>` and test classes named `Test<ClassOrModule>`.
+## Build / Lint / Test Commands
 
-**Docstrings & Comments**
-- Use Google‑style or reST docstrings. Include a short description, parameters, returns, and raises.
-- For public API functions and classes, always provide a docstring.
-- Keep comments meaningful; avoid noisy comments that restate the code. Document intent and non-obvious decisions.
+### Backend (Python)
+| Task | Command |
+|------|---------|
+| Install deps | `pip install -r requirements.txt` |
+| Run API server | `python src/backend/main.py` |
+| Run CLI mode | `python src/backend/cli_main.py` |
+| Run all tests | `pytest -q` |
+| Run single test file | `pytest -q tests/test_file.py` |
+| Run single test | `pytest -q tests/test_file.py::TestClass::test_name` |
+| Run tests by pattern | `pytest -q -k "pattern"` |
+| Debug a test | `pytest -q tests/test_x.py -k test_name -s --pdb` |
+| Lint | `flake8 .` |
+| Format | `black .` |
+| Sort imports | `isort .` |
+| Type check | `mypy .` |
+| Full check | `black . && isort . && flake8 . && mypy .` |
 
-**Error Handling & Exceptions**
-- Prefer explicit exceptions: define custom exception classes in `src/exceptions.py` (or appropriate module) when the error is part of domain logic.
-- Avoid bare `except:`. Catch specific exceptions (e.g., `except ValueError:`) or `except Exception as exc:` when re-raising or wrapping.
-- When catching and re-raising, preserve the original exception context using `raise NewError(...) from exc`.
-- Fail fast for invalid inputs: validate arguments and raise `ValueError` / `TypeError` as appropriate.
-- Use context managers (`with`) for resource management to ensure deterministic cleanup.
+### Frontend (TypeScript/React)
+| Task | Command |
+|------|---------|
+| Install deps | `npm install` (in `src/frontend/`) |
+| Dev server | `npm run dev` |
+| Build | `npm run build` |
+| Lint | `npm run lint` |
+| Type check | `tsc -b` |
 
-**Logging**
-- Use the `logging` module for all runtime logs. Avoid `print()` in library code.
-- Configure logging in application entrypoint (e.g., `main.py`) and keep libraries quiet by using `logger = logging.getLogger(__name__)`.
-- Use structured, informative messages. Avoid logging sensitive information (secrets, tokens).
-- Log at the appropriate level: `DEBUG` for development traces, `INFO` for routine events, `WARNING` for recoverable issues, `ERROR` for failures, `CRITICAL` for unrecoverable problems.
+## Code Style Guidelines
 
-**I/O, Paths & Filesystem**
-- Use `pathlib.Path` for path manipulation and avoid hardcoding OS path separators.
-- For file reads/writes, open files using `with` to ensure proper closure.
-- Keep test fixtures that create files in temporary directories (use `tmp_path`/`tmp_path_factory` from pytest).
-- Avoid writing to absolute system paths; prefer configurable directories via environment variables or CLI flags.
+### Python
 
-**Configuration & Secrets**
-- Prefer environment variables (`os.environ`) for configuration. Use a `.env` loader (e.g., python-dotenv) only in local dev; do not commit `.env` files with secrets.
-- Follow 12‑factor app principles for config: keep config out of code.
-- Secrets must never be checked into git. If a secret is accidentally committed, rotate it and follow org incident process.
+**Imports:**
+- Group: stdlib, third-party, local application (use `isort` to enforce)
+- Prefer absolute imports: `from helpers.state import AgentState`
+- Use relative imports only within the same package: `from .agent import BaseAgent`
 
-**Testing Guidance**
-- Prefer `pytest` and fixture‑based tests. Keep tests deterministic and fast.
-- Use `monkeypatch` for environment and dependency injection in tests.
-- Write unit tests for logic and small integration tests for external interactions.
-- When adding tests, aim for clear Arrange/Act/Assert structure.
-- If necessary, tag slow/integration tests with markers (`@pytest.mark.integration`) and run them separately.
+**Formatting:**
+- Use `black` with default 88-char line length
+- Run `black . && isort .` before commits
 
-**Dependency Management**
-- List runtime deps in `requirements.txt`. Keep it up to date when adding libraries.
-- For dev dependencies, create `dev-requirements.txt` or use `requirements-dev` in tooling.
-- Avoid unnecessary dependencies; prefer stdlib when possible.
+**Typing:**
+- Add type hints to all public functions and methods
+- Use modern syntax: `list[int]`, `dict[str, Any]`, `Optional[...]`
+- Use `TypedDict` for structured dicts (see `AgentState` in `helpers/state.py`)
+- Use `Literal` for constrained string types (see `Router` in `supervisor.py`)
 
-**Git, Commits & PRs**
-- Commit only logical units of work. Keep messages short and descriptive (1-line summary + optional body).
-- Do not commit secrets or large binary files.
-- Follow the repository's branching/PR conventions; ensure tests pass before requesting review.
-- If asked to create commits or PRs, the agent should prepare diffs and suggest commit messages for human approval.
+**Naming:**
+- Files/modules: `snake_case.py`
+- Functions/variables: `snake_case`
+- Classes: `PascalCase` (e.g., `BaseAgent`, `Supervisor`)
+- Constants: `UPPER_CASE` (e.g., `_SYSTEM_PROMPT`, `_DB_DATA`)
+- Private members: prefix with underscore (`_get_connection`)
 
-**Continuous Integration & Non‑interactive Commands**
-- CI jobs should run `pip install -r requirements.txt`, `black --check .`, `isort --check .`, `flake8 .`, `mypy .`, and `pytest -q`.
-- Ensure all CLI commands are non‑interactive and exit non‑zero on failures.
+**Docstrings:**
+- Use Google-style docstrings for public functions and classes
+- Include description, parameters, returns, and raises sections
 
-**Local Development Helper Commands**
-- Create and activate venv (Unix): `python -m venv .venv && source .venv/bin/activate`.
-- Run formatting + lint as a single pipeline: `black . && isort . && flake8 .`.
-- Run tests and open coverage: `coverage run -m pytest && coverage html`.
+**Error Handling:**
+- Catch specific exceptions: `except oracledb.Error as exc:`
+- Preserve context when re-raising: `raise RuntimeError(...) from exc`
+- Validate inputs early and raise `ValueError`/`TypeError`
+- Use context managers for resources: `with _get_connection() as conn:`
 
-**Agent Behavior Expectations**
-- Preserve existing code style and minimal surface changes.
-- Fix root causes rather than temporary patches when practical.
-- Do not create new files unless requested; prefer editing existing files.
-- When editing files, read them first (the agent runner enforces this) and make minimal, well‑explained changes.
-- If changes touch multiple modules, explain rationale in the PR/commit message.
-- Run tests locally when making behavioral changes and report failing tests to the user.
+**Logging:**
+- Use `logging` module, not `print()` in library code
+- CLI scripts may use `print()` for user output
 
-**Cursor / Copilot Rules**
-- This repository contains no `.cursor/rules/` or `.cursorrules` files.
-- This repository contains no `.github/copilot-instructions.md` file.
+### TypeScript/React
 
-**Where To Look / Useful Paths**
-- Entrypoint: `main.py`.
-- Agents: `agents/`.
-- Application code: `src/`.
-- Tests: `tests/` or `test_*.py` files at the repository root.
-- Requirements: `requirements.txt` (dev: `dev-requirements.txt` if present).
+**Imports:**
+- Group: React, third-party, local components, types, styles
 
-**Troubleshooting & Notes**
-- If a linter or test fails, run the failing command locally and capture output, then create a focused fix.
-- If `mypy` is noisy, annotate `# type: ignore` with a short explanation and prefer to add precise types instead.
-- If making large refactors, break work into small commits and keep tests green after each commit.
+**Naming:**
+- Components: `PascalCase.tsx` (e.g., `ChatMessage.tsx`)
+- Hooks: `camelCase` with `use` prefix (e.g., `useAgent.tsx`)
+- Types: `PascalCase` in `types/types.ts`
+- Utilities: `camelCase.ts`
 
-Scope
-- Rules in this AGENTS.md apply repository‑wide unless a more specific AGENTS.md exists in a subdirectory. Local instructions in a subdirectory take precedence.
+**Typing:**
+- Define interfaces/types in `src/types/types.ts`
+- Use explicit return types on exported functions
 
-(End of agent guidance)
+## LangGraph Agent Patterns
+
+This codebase uses LangGraph for multi-agent orchestration:
+
+**Agent Classes:**
+- Inherit from `BaseAgent` (see `agents/agent.py`)
+- Override `run(state: AgentState)` for custom logic
+- Bind tools in constructor: `model.bind_tools(tools)`
+
+**State Management:**
+- Use `AgentState` TypedDict from `helpers/state.py`
+- Messages use `Annotated[Sequence[BaseMessage], operator.add]` for append semantics
+
+**Supervisor Pattern:**
+- Use `with_structured_output(Router)` for routing decisions
+- Return `{"next": "AgentName"}` to control flow
+
+**Adding New Agents:**
+1. Create class in `agents/` inheriting `BaseAgent`
+2. Export from `agents/__init__.py`
+3. Register node in `helpers/graph_builder.py`
+4. Add routing in `Supervisor` and conditional edges
+
+## Configuration & Secrets
+
+- Use `.env` files for local configuration (never commit)
+- Required env vars: `GROQ_API_KEY`, `HOST`, `PORT`, `ORIGIN`
+- Oracle DB: `ORACLE_DB_USER`, `ORACLE_DB_PASSWORD`, `ORACLE_DB_DSN`, `TABLE_NAME`
+
+## Testing Guidance
+
+- Use `pytest` with fixtures
+- Use `monkeypatch` for env vars and dependencies
+- Mock external services (LLM calls, database)
+- Structure tests as Arrange/Act/Assert
+
+## Agent Behavior Expectations
+
+- Read files before editing (enforced by runner)
+- Make minimal, focused changes
+- Preserve existing code style
+- Fix root causes, not symptoms
+- Run tests when making behavioral changes
+- Do not create new files unless explicitly requested
+- Do not commit unless the user explicitly asks
+- Never apply changes unless the user says "You may implement the changes"
+
+## Cursor / Copilot Rules
+
+This repository contains no `.cursor/rules/`, `.cursorrules`, or `.github/copilot-instructions.md` files.
+
+## Useful Paths
+
+- Backend entrypoint: `src/backend/main.py`
+- CLI entrypoint: `src/backend/cli_main.py`
+- Agents: `src/backend/agents/`
+- Graph builder: `src/backend/helpers/graph_builder.py`
+- State definition: `src/backend/helpers/state.py`
+- Frontend app: `src/frontend/src/App.tsx`
+- API service: `src/frontend/src/services/api.ts`
+- Requirements: `requirements.txt`
+
+## Scope
+
+Rules in this AGENTS.md apply repository-wide unless a more specific AGENTS.md exists in a subdirectory. Local instructions take precedence.

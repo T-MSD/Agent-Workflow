@@ -12,5 +12,5 @@ export const invokeAgent = async (prompt: string): Promise<string> => {
     throw new Error('Failed to get a response from the agent.');
     }
     const data = await response.json();
-    return data.output;
+    return data.response;
 };

@@ -1,4 +1,4 @@
-import type { Message } from '../../types/messages';
+import type { Message } from '../../types/types';
 import ChatIcon from './ChatIcon';
 
 function ChatMessage({ message, role, }: Message) {

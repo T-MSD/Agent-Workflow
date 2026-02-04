@@ -44,7 +44,7 @@ function ChatInputArea({onSendMessage }: ChatInputAreaProps) {
 
     return (
         <>
-            <div className="flex w-full min-h-[48px] p-2 justify-between items-center gap-2 bg-neutral-600 rounded-lg text-white relative">
+            <div className="flex w-full min-h-[48px] max-w-5xl p-2 justify-between items-center gap-2 bg-neutral-600 rounded-lg text-white relative">
                 {prompt.length === 0 && (
                     <div className="absolute left-3 text-neutral-400 pointer-events-none">
                         Type your message here...
