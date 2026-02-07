@@ -5,10 +5,11 @@ import ChatSendButton from './ChatSendButton';
 
 interface ChatInputAreaProps {
     onSendMessage: (content: string, role: 'User' | 'Agent') => void;
+    onError: (error: string) => void;
 }
 
 
-function ChatInputArea({onSendMessage }: ChatInputAreaProps) {
+function ChatInputArea({ onSendMessage, onError }: ChatInputAreaProps) {
     const [prompt, setPrompt] = useState('');
     const { isLoading, askAgent } = useAgent();
     const inputRef = useRef<HTMLDivElement>(null);
@@ -26,7 +27,7 @@ function ChatInputArea({onSendMessage }: ChatInputAreaProps) {
         if (res.ok) {
             onSendMessage(res.text, 'Agent');
         } else {
-            onSendMessage(res.error, 'Agent');
+            onError(res.error);
         }
         
         setPrompt('');

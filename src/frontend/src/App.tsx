@@ -1,5 +1,5 @@
 import './App.css'
-import ChatWrapper from './components/Chat/ChatWrapper';
+import ChatWrapper from './components/chat/ChatWrapper';
 
 function App() {
 
