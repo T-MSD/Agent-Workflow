@@ -1,3 +1,6 @@
 .env
 
 data/schema.json
+
+# SQLite database
+*.db

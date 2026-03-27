@@ -4,32 +4,37 @@ import { useAgent } from '../../hooks/useAgent';
 import ChatSendButton from './ChatSendButton';
 
 interface ChatInputAreaProps {
+    conversationId: string | null;
     onSendMessage: (content: string, role: 'User' | 'Agent') => void;
+    onNewConversation: (conversationId: string) => void;
     onError: (error: string) => void;
 }
 
 
-function ChatInputArea({ onSendMessage, onError }: ChatInputAreaProps) {
+function ChatInputArea({ conversationId, onSendMessage, onNewConversation, onError }: ChatInputAreaProps) {
     const [prompt, setPrompt] = useState('');
     const { isLoading, askAgent } = useAgent();
     const inputRef = useRef<HTMLDivElement>(null);
-    
+
     const handleInput = (e: React.ChangeEvent<HTMLDivElement>) => {
         setPrompt(e.currentTarget.innerText);
     };
 
     const handleSend = async () => {
         if (!prompt.trim() || isLoading) return;
-        
+
         onSendMessage(prompt, 'User');
-        
-        const res = await askAgent(prompt);
+
+        const res = await askAgent(prompt, conversationId ?? undefined);
         if (res.ok) {
             onSendMessage(res.text, 'Agent');
+            if (!conversationId) {
+                onNewConversation(res.conversationId);
+            }
         } else {
             onError(res.error);
         }
-        
+
         setPrompt('');
         if (inputRef.current) {
             inputRef.current.innerText = '';

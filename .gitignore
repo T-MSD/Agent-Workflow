@@ -4,4 +4,10 @@
 # Ignore virtual environment directory
 venv/
 
+# OS files
+.DS_Store
+
+# Python cache
+__pycache__/
+
 TODO.md

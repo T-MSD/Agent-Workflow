@@ -6,12 +6,37 @@ import ChatWelcomeHero from './ChatWelcomeHero';
 import AlertError from '../ui/AlertError';
 import type { Message } from '../../types/types';
 import { createMessage } from '@/utils/messages';
+import { fetchMessages } from '../../services/api';
 
-function ChatWrapper() {
-  const [isFirstMessage, setIsFirstMessage] = useState(true);
+interface ChatWrapperProps {
+  conversationId: string | null;
+  onNewConversation: (conversationId: string) => void;
+}
+
+function ChatWrapper({ conversationId, onNewConversation }: ChatWrapperProps) {
   const [messages, setMessages] = useState<Message[]>([]);
   const [error, setError] = useState<string | null>(null);
   const [fading, setFading] = useState(false);
+
+  const isWelcome = !conversationId && messages.length === 0;
+
+  useEffect(() => {
+    if (!conversationId) {
+      setMessages([]);
+      return;
+    }
+
+    let cancelled = false;
+    fetchMessages(conversationId)
+      .then((msgs) => {
+        if (!cancelled) setMessages(msgs);
+      })
+      .catch((err) => {
+        console.error('Failed to load messages:', err);
+      });
+
+    return () => { cancelled = true; };
+  }, [conversationId]);
 
   const addMessageToHistory = (content: string, role: 'User' | 'Agent') => {
     setError(null);
@@ -19,10 +44,6 @@ function ChatWrapper() {
       const newMessage: Message = createMessage(content, role);
       return [...prev, newMessage];
     });
-
-    if (isFirstMessage) {
-        setIsFirstMessage(false);
-    }
   };
 
   const handleError = (errorMessage: string) => {
@@ -47,13 +68,18 @@ function ChatWrapper() {
 
   return (
     <>
-      <div className={isFirstMessage
+      <div className={isWelcome
         ? "flex flex-col w-full text-white p-6 self-center items-center gap-24"
         : "flex flex-col w-full h-full text-white p-6 bg-neutral-800 items-center rounded-sm gap-8"
       }>
-        {isFirstMessage ? <ChatWelcomeHero /> : <ChatHistory messages={messages}/>}
+        {isWelcome ? <ChatWelcomeHero /> : <ChatHistory messages={messages}/>}
         {error && <AlertError message={error} fading={fading} />}
-        <ChatInputArea onSendMessage={addMessageToHistory} onError={handleError} />
+        <ChatInputArea
+          conversationId={conversationId}
+          onSendMessage={addMessageToHistory}
+          onNewConversation={onNewConversation}
+          onError={handleError}
+        />
       </div>
     </>
   );
